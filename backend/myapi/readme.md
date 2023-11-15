@@ -1,5 +1,11 @@
 # Anotações sobre a API
 
+## Como executar
+* Necessário instalar todas as dependências do projeto listadas no arquivo **requirements**
+* A instalação das dependências podem ser instaladas usando **pip install -r requirements**
+* Após a instalação das dependências, basta executar o comando **python manage.py runserver**
+
+
 ## Diretórios
 * myapi/ : contém os arquivos de configuração relacionados ao servidor da API
 * myapp/ : contém os arquivos da aplicação
