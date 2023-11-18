@@ -1,5 +1,5 @@
-from ..models.vertex import Vertex
-from ..models.edge import Edge
+from models import Vertex
+from models import Edge
 
 '''
     Classe que representa o grafo do mapa da EACH.
