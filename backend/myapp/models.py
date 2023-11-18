@@ -38,7 +38,8 @@ class Vertex(models.Model):
 '''
 class Edge(models.Model):
     
-    name = models.CharField(max_length=255, primary_key=True)
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
     origin = models.ForeignKey(Vertex, on_delete=models.CASCADE, related_name='edges_origin')
     destiny = models.ForeignKey(Vertex, on_delete=models.CASCADE, related_name='edges_destiny')
     length = models.FloatField()
@@ -48,5 +49,3 @@ class Edge(models.Model):
     surface_type = models.IntegerField()
     surface_quality = models.IntegerField()
     segment_type = models.IntegerField()
-    weigth = models.FloatField()
-
