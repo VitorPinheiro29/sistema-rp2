@@ -2,7 +2,7 @@ from models import Vertex
 from models import Edge
 
 '''
-    Classe que representa o grafo do mapa da EACH.
+    Classe que modela o grafo do mapa da EACH.
     O grafo é contruído em tempo de execução quando instanciado.
     
     Atributos:
@@ -27,3 +27,17 @@ class Graph:
     # Implementa Dijkstra
     def most_acessible_route(self, origin: Vertex, destiny: Edge):
         pass
+
+
+'''
+    Classe que modela a resposta do grafo e devolvida para o frontend.
+'''
+class GraphResponse:
+    
+    def __init__(self, origin: Vertex, destiny: Vertex):
+        self._origin = origin
+        self._destiny = destiny
+        self._waypoints = set()
+    
+    def add_waypoints(self, waypoint: Vertex):
+        self._waypoints.add(waypoint)

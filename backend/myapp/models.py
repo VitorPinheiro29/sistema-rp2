@@ -2,7 +2,7 @@ from django.db import models
 
 
 ''''
-    Classe que representa os vértices do grafo.
+    Classe que modela os vértices do grafo.
     Atributos:
         - name: nome que identifica o vértice
         - latitude: coordenada geográfica
@@ -23,7 +23,7 @@ class Vertex(models.Model):
                 self.edges.add(edge)
                 
 '''
-    Classe que representa as arestas do grafo.
+    Classe que modela as arestas do grafo.
     Atributos:
         - name: nome que identifica a aresta
         - origin: vértice origem em que a aresta incide
