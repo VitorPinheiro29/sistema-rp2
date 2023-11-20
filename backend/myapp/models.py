@@ -1,5 +1,5 @@
 from django.db import models
-
+from models import Vertex, Edge
 
 ''''
     Classe que modela os vértices do grafo.
@@ -7,7 +7,9 @@ from django.db import models
         - name: nome que identifica o vértice
         - latitude: coordenada geográfica
         - longitude: coordenada geográfica
-        - edges: conjuto de arestas incidentes do vértice. Representa uma lista de incidências.
+        - weight_estimate: estimativa de peso inicial do vértice, usando para relaxamento
+        - predecessor: vértice predecessor do atual
+        - adjacencies: conjunto de tuplas que contém (vértice adjacente, aresta)
 '''
 class Vertex(models.Model):
     
@@ -15,12 +17,20 @@ class Vertex(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=7)
     longitude = models.DecimalField(max_digits=9, decimal_places=7)
-    edges = set()
     
-    def find_edges(self, edges):
+    def __init__(self, *args, **kwargs):
+        super(Vertex, self).__init__(*args, **kwargs)
+        self.weight_estimate = 1_000_000
+        self.predecessor = None
+        self.adjacencies = set()
+    
+    def find_vertices_adjacent(self, edges: set):
         for edge in edges:
-            if edge.origin.id == self.id or edge.destiny.id == self.id:
-                self.edges.add(edge)
+            if edge.origin == self:
+                self.adjacencies.add((edge.destiny, edge))
+            if edge.destiny == self:
+                self.adjacencies.add((edge.origin, edge))
+                
                 
 '''
     Classe que modela as arestas do grafo.
@@ -35,6 +45,9 @@ class Vertex(models.Model):
         - surface_type: qualidade da superfície
         - surface_quality: qualidade da superfície
         - segment_type: tipo de material que compõe a superfície
+    
+    Métodos:
+        - weight: retorna o peso a ser considerado da aresta
 '''
 class Edge(models.Model):
     
@@ -49,3 +62,14 @@ class Edge(models.Model):
     surface_type = models.IntegerField()
     surface_quality = models.IntegerField()
     segment_type = models.IntegerField()
+
+    @property
+    def weight(self):
+        weight = self.length
+        + self.width
+        + self.height
+        + self.slope
+        + self.surface_type
+        + self.surface_quality
+        + self.segment_type
+        return weight
