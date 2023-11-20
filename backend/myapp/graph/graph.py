@@ -1,7 +1,6 @@
 from models import Vertex, Edge
 from graphAlgorithms import GraphAlgorithms
-from graph import GraphResponse
-
+from graphResponse import GraphResponse
 '''
     Classe que modela o grafo do mapa da EACH.
     O grafo é contruído em tempo de execução quando instanciado.
@@ -39,9 +38,7 @@ class Graph:
     def _extract_path(self, origin: Vertex, destiny: Vertex) -> GraphResponse:
         graphResponse = GraphResponse(origin, destiny)
         predecessor = destiny.predecessor
-        while True:
-            if (predecessor == origin):
-                break
+        while predecessor.predecessor is not None:
             graphResponse.add_waypoints(predecessor)
             predecessor = predecessor.predecessor
         return graphResponse
