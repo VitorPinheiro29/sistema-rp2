@@ -1,4 +1,4 @@
-from models import Vertex
+from myapp.models import Vertex
 
 '''
     Classe que modela a resposta da rota mais acessível entre um vértice origem e destino.
@@ -16,3 +16,7 @@ class GraphResponse:
     
     def add_waypoints(self, waypoint: Vertex):
         self._waypoints.add(waypoint)
+    
+    def __repr__(self) -> str:
+        string = f"origin: {self._origin}\ndestiny: {self._destiny}\nwaypoints: {self._waypoints}"
+        return string

@@ -1,6 +1,7 @@
-from models import Vertex, Edge
-from graphAlgorithms import GraphAlgorithms
-from graphResponse import GraphResponse
+from ..models import Vertex, Edge
+from .graphAlgorithms import GraphAlgorithms
+from .graphResponse import GraphResponse
+
 '''
     Classe que modela o grafo do mapa da EACH.
     O grafo é contruído em tempo de execução quando instanciado.
@@ -16,23 +17,39 @@ from graphResponse import GraphResponse
 class Graph:
     
     def __init__(self):
-        self._vertices = set(Vertex.objects.all())
-        self._edges = set(Edge.objects.all())
+        self._vertices = list(Vertex.objects.all())
+        self._edges = list(Edge.objects.all())
         self._build()
         
     @property
     def vertices(self) -> set:
         return self._vertices
     
+    @property
+    def edges(self) -> set:
+        return self._edges
+    
     def _build(self):
         for vertex in self._vertices:
-            vertex.find_vertices_adjacent(self._edges)
+            for edge in self.edges:
+                adjacent_id = edge.search_vertex_id(vertex.id)
+                if adjacent_id:
+                    adjacent = self._search_vertex_references(adjacent_id)
+                    if adjacent:
+                        vertex.add_adjacent(adjacent, edge)
+    
+    def _search_vertex_references(self, vertex_id: str) -> Vertex | None:
+        for vertex in self._vertices:
+            if vertex.id == vertex_id:
+                return vertex
+        return None
     
     # Implementa Dijkstra
-    def most_acessible_route(self, origin: Vertex, destiny: Edge) -> GraphResponse:
+    def most_acessible_route(self, origin_id: str, destiny_id: str) -> GraphResponse:
+        origin = self._search_vertex_references(origin_id)
+        destiny = self._search_vertex_references(destiny_id)
         GraphAlgorithms.dijkstra(self, origin)
         return self._extract_path(origin, destiny)
-    
     
     # Constroi o caminho do vértice origem até o destino
     def _extract_path(self, origin: Vertex, destiny: Vertex) -> GraphResponse:

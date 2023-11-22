@@ -1,5 +1,4 @@
 from django.db import models
-from models import Vertex, Edge
 
 ''''
     Classe que modela os vértices do grafo.
@@ -22,15 +21,34 @@ class Vertex(models.Model):
         super(Vertex, self).__init__(*args, **kwargs)
         self.weight_estimate = 1_000_000
         self.predecessor = None
-        self.adjacencies = set()
+        self.adjacencies = []
     
-    def find_vertices_adjacent(self, edges: set):
-        for edge in edges:
-            if edge.origin == self:
-                self.adjacencies.add((edge.destiny, edge))
-            if edge.destiny == self:
-                self.adjacencies.add((edge.origin, edge))
-                
+    def __repr__(self) -> str:
+        return str(f'{self.id}({self.weight_estimate})')
+    
+    def __str__(self) -> str:
+        return str(f'{self.id}({self.weight_estimate})')
+    
+    def __lt__(self, other):
+        return self.weight_estimate < other.weight_estimate
+
+    def add_adjacent(self, vertex, edge):
+        adjacent = Adjacency(vertex, edge)
+        self.adjacencies.append(adjacent)         
+
+class Adjacency:
+    
+    def __init__(self, vertex, edge):
+        self._vertex = vertex
+        self._edge = edge.weight
+    
+    @property
+    def vertex(self):
+        return self._vertex
+    
+    @property
+    def edge(self):
+        return self._edge
                 
 '''
     Classe que modela as arestas do grafo.
@@ -63,13 +81,24 @@ class Edge(models.Model):
     surface_quality = models.IntegerField()
     segment_type = models.IntegerField()
 
+    def __repr__(self) -> str:
+        return self.name
+    
     @property
     def weight(self):
-        weight = self.length
+        weight = (self.length
         + self.width
         + self.height
         + self.slope
         + self.surface_type
         + self.surface_quality
-        + self.segment_type
+        + self.segment_type)
         return weight
+    
+    def search_vertex_id(self, vertex_id: str) -> str | None:
+        if self.origin.id == vertex_id:     # se está como origem, recebe o destino
+            return self.destiny.id
+        if self.destiny.id == vertex_id:    # se está como destino, recebe a origem
+            return self.origin.id
+        return None
+        
