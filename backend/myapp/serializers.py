@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models.vertex import Vertex
 from .models.edge import Edge
+from .graph.graphResponse import GraphResponse
 
 class VertexSerializer(serializers.ModelSerializer):
 
@@ -15,3 +16,8 @@ class EdgeSerializer(serializers.ModelSerializer):
 
         model = Edge
         fields = '__all__'
+
+class GraphResponseSerializer(serializers.Serializer):
+    origin = VertexSerializer()
+    destiny = VertexSerializer()
+    waypoints = VertexSerializer(many=True)

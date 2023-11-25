@@ -1,4 +1,4 @@
-from ..models import Vertex
+from ..models.vertex import Vertex
 from .priority_queue import PriorityQueue
 
 class GraphAlgorithms:

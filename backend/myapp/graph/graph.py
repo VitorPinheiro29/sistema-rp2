@@ -1,4 +1,5 @@
-from ..models import Vertex, Edge
+from ..models.vertex import Vertex
+from ..models.edge import Edge
 from .graphAlgorithms import GraphAlgorithms
 from .graphResponse import GraphResponse
 
@@ -45,9 +46,11 @@ class Graph:
         return None
     
     # Implementa Dijkstra
-    def most_acessible_route(self, origin_id: str, destiny_id: str) -> GraphResponse:
+    def most_acessible_route(self, origin_id: str, destiny_id: str) -> GraphResponse | None:
         origin = self._search_vertex_references(origin_id)
         destiny = self._search_vertex_references(destiny_id)
+        if origin is None or destiny is None:
+            return None
         GraphAlgorithms.dijkstra(self, origin)
         return self._extract_path(origin, destiny)
     

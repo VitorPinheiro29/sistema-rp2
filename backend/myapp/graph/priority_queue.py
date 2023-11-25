@@ -1,5 +1,5 @@
 from heapq import heappush, heappop, heapify
-from myapp.models import Vertex
+from ..models.vertex import Vertex
 
 
 '''
