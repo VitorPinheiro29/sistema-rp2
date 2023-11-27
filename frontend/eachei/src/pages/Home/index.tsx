@@ -1,14 +1,18 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import MapView from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
-import SearchBar from "../../components/SearchBar";
 import UniversityLogo from "../../components/UniversityLogo";
+import { useEffect, useState, useRef } from "react";
+import api from "../../services/api";
+import { useIsFocused } from '@react-navigation/native';
+
 
 const Home = () => {
-  const origin = { latitude: -23.4828757, longitude: -46.5019094 };
-  const destination = { latitude: -23.483198, longitude: -46.5020074 };
+  const [origin, setOrigin] = useState({latitude: 0, longitude: 0})
+  const [destination, setDestination] = useState({latitude: 0, longitude: 0 })
+  const rerenderCounterRef = useRef(0);
   const GOOGLE_MAPS_APIKEY = "AIzaSyDO-Yyz7UanOQxan8-mXjILjHyYxx7iwdM";
   const mapCustomStyle = [
     { elementType: "geometry", stylers: [{ color: "#182537" }] },
@@ -92,14 +96,41 @@ const Home = () => {
   ];
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const isFocused = useIsFocused();
+
+  const routeParams = route.params as any;
 
   const handleSearchBarPress = () => {
       navigation.navigate("Search" as never);
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (routeParams) {
+        api
+        .get(`/acessible-route/?origin=${routeParams.originId}&destiny=${routeParams.destinyId}`)
+        .then((response: any) => {
+          console.log(parseFloat(response.data.origin.latitude));
+          origin.latitude = parseFloat(response.data.origin.latitude)
+          origin.longitude = parseFloat(response.data.origin.longitude)
+  
+          destination.latitude = parseFloat(response.data.destiny.latitude)
+          destination.longitude = parseFloat(response.data.destiny.longitude)
+  
+          setOrigin(origin)
+          setDestination(destination)
+          rerenderCounterRef.current += 1;
+        })
+        .catch((error) => console.log(error));
+      }
+    }, 200)
+  }, [isFocused]);
+
   return (
     <View style={styles.container}>
       <MapView
+        key={rerenderCounterRef.current}
         customMapStyle={mapCustomStyle}
         style={styles.map}
         minZoomLevel={16.2}
@@ -123,6 +154,7 @@ const Home = () => {
         <TouchableOpacity onPress={handleSearchBarPress}>
           <View style={styles.button}>
             <UniversityLogo />
+            <Text style={styles.buttonText}>Pesquisar trajeto</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -138,7 +170,6 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-
   searchBarContainer: {
     position: "absolute",
     top: 50,
@@ -147,7 +178,6 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "90%",
   },
-
   button: {
     height: 40,
     borderRadius: 20,
@@ -155,7 +185,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#453f51",
     color: "white",
     flexDirection: "row",
+    alignItems: "center"
   },
+  buttonText: {
+    fontSize: 16,
+    marginLeft: 8,
+    color: "#767676"
+  }
 });
 
 export default Home;

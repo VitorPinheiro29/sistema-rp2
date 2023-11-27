@@ -4,8 +4,13 @@ import SearchBar from "../../components/SearchBar";
 import PlaceList from "../../components/Places/PlaceList";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/core";
 
 const Search = () => {
+  const navigation = useNavigation()
+
   const [origin, setOrigin] = useState("");
   const [destiny, setDestiny] = useState("");
 
@@ -16,27 +21,20 @@ const Search = () => {
   };
 
   const handleSearchBar = (placeholder: string) => {
-    console.log("vish:", placeholder);
-
     searchBarSelected =
       placeholder == "Informe sua origem" ? "origem" : "destino";
   };
 
   const changeSearchBarContent = (option: string) => {
-    console.log("serafini", searchBarSelected);
     if (searchBarSelected != "") {
       searchBarSelected == "origem" ? setOrigin(option) : setDestiny(option);
     }
   };
 
-  useEffect(() => {
-    api
-    .get("/acessible-route/?origin=P3&destiny=CE3P3")
-    .then((response: any) => {
-      console.log(response.data);
-    }).catch(error => console.log(error));
-}, [])
-
+  const sendRoute = () => {
+    navigation.navigate('Home' as never, {originId: "P3", destinyId: "CE3P3"} as never)
+  }
+  
   const places = [
     {
       title: "Portarias",
@@ -54,8 +52,8 @@ const Search = () => {
         { id: "X", name: "Titanic" },
         { id: "X", name: "Elefante Branco" },
         { id: "X", name: "Ciclo Básico (CB)" },
-        { id: "X", name: "Anfiteatros" },
-        { id: "X", name: "Biblioteca" },
+        { id: "I5", name: "Anfiteatros" },
+        { id: "I3", name: "Biblioteca" },
         { id: "X", name: "Gráfica" },
         { id: "X", name: "Ginásio" },
         { id: "X", name: "Serviço de Saúde (UBAS Leste)" },
@@ -94,7 +92,7 @@ const Search = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{ height: 200, position: "relative" }}>
+      <ScrollView style={{ flex: 1 }}>
         <SearchBar
           placeholder="Informe sua origem"
           origin={origin}
@@ -108,6 +106,15 @@ const Search = () => {
 
         <PlaceList places={places} onChange={handleOnChange} />
       </ScrollView>
+
+      <TouchableOpacity style={styles.fixedButton} onPress={sendRoute}>
+        <MaterialCommunityIcons
+          name={"navigation-outline" as any}
+          size={24}
+          color="white"
+        />
+        <Text style={styles.buttonText} onPress={sendRoute}>Iniciar trajeto</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -117,6 +124,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#282828",
     paddingTop: 40,
+  },
+  fixedButton: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 140,
+    height: 50,
+    bottom: 50, // Ajuste conforme necessário
+    left: 200, // Ajuste conforme necessário
+    backgroundColor: "blue",
+    padding: 10,
+    borderRadius: 20,
+    zIndex: 1,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    marginLeft: 5
   },
 });
 export default Search;
