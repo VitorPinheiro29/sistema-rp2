@@ -18,6 +18,8 @@ class Vertex(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=7)
     longitude = models.DecimalField(max_digits=9, decimal_places=7)
     vertexType = models.CharField(max_length=9,null=True)
+    isAcessible = models.BooleanField(default=False, null=True)
+    observation = models.CharField(max_length=255, default="", null=True)
     
     def __init__(self, *args, **kwargs):
         super(Vertex, self).__init__(*args, **kwargs)

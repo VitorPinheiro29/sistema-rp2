@@ -4,7 +4,7 @@ from .priority_queue import PriorityQueue
 class GraphAlgorithms:
     
     @staticmethod
-    def dijkstra(graph, source: Vertex):
+    def dijkstra(graph, source):
         source.weight_estimate = 0
         queue = PriorityQueue(graph.vertices)
         while not queue.is_empty():

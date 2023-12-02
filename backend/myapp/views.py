@@ -22,6 +22,8 @@ class EdgeList(generics.ListCreateAPIView):
 def most_acessible_route(request):
     origin = request.GET.get('origin')
     destiny = request.GET.get('destiny')
+    isRaining = request.GET.get('isRaining')
+    isCrowded = request.GET.get('isCrowded')
     graph = Graph()
     response = graph.most_acessible_route(origin, destiny)
     if response:

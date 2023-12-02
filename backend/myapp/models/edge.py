@@ -41,7 +41,7 @@ class Edge(models.Model):
     @property
     def weight(self):
         weight = (self.length
-        + (3/self.width)
+        + (3/self.width if self.width != 0 else 0)
         + self.height
         + self.slope
         + self.surface_type
