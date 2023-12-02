@@ -8,7 +8,7 @@ class VertexSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Vertex
-        fields = ('id', 'name', 'latitude', 'longitude')
+        fields = ('id', 'name', 'latitude', 'longitude', 'vertexType')
         
 class EdgeSerializer(serializers.ModelSerializer):
 

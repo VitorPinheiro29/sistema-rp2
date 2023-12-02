@@ -31,14 +31,17 @@ class Edge(models.Model):
     surface_type = models.IntegerField()
     surface_quality = models.IntegerField()
     segment_type = models.IntegerField()
-
+    isCovered = models.BooleanField(default=False, null=True)
+    isCrowded = models.BooleanField(default=False, null=True)
+    
     def __repr__(self) -> str:
         return self.name
     
+    # Definir função de custo das arestas
     @property
     def weight(self):
         weight = (self.length
-        + self.width
+        + (3/self.width)
         + self.height
         + self.slope
         + self.surface_type

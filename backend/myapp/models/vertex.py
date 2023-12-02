@@ -17,6 +17,7 @@ class Vertex(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=7)
     longitude = models.DecimalField(max_digits=9, decimal_places=7)
+    vertexType = models.CharField(max_length=9,null=True)
     
     def __init__(self, *args, **kwargs):
         super(Vertex, self).__init__(*args, **kwargs)
