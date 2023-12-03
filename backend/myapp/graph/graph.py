@@ -17,9 +17,9 @@ from .graphResponse import GraphResponse
 '''
 class Graph:
     
-    def __init__(self):
-        self._vertices = list(Vertex.objects.all())
-        self._edges = list(Edge.objects.all())
+    def __init__(self, preferences):
+        self._vertices = list(Vertex.objects.filter(isAcessible=True))
+        self._edges = self._get_edges(preferences)
         self._build()
         
     @property
@@ -30,6 +30,18 @@ class Graph:
     def edges(self) -> set:
         return self._edges
     
+    def _get_edges(self, preferences):
+        edges = []
+        if preferences['raining'] and preferences['crowded']:
+            edges = list(Edge.objects.filter(isCovered=True, isCrowded=False))
+        elif preferences['raining']:
+            edges = list(Edge.objects.filter(isCovered=True))
+        elif preferences['crowded']:
+            edges = list(Edge.objects.filter(isCrowded=False))
+        else:
+            edges = list(Edge.objects.all())
+        return edges
+            
     def _build(self):
         for vertex in self._vertices:
             for edge in self.edges:
