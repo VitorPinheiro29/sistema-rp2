@@ -3,7 +3,6 @@ import { StyleSheet, View, Text } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-
 interface PlaceItemProps {
   title: string;
   icon: string;

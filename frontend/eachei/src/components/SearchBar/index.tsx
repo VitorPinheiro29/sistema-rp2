@@ -7,16 +7,16 @@ import {
   KeyboardAvoidingView,
   Platform
 } from "react-native";
-import UniversityLogo from "../UniversityLogo";
 
 interface SearchBarProps {
   placeholder: string;
   origin?: string;
   destiny?: string;
   onChange: (placeholder: string) => void;
+  onChangeTextTyped: (textTyped: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({placeholder, origin, destiny, onChange}) => {
+const SearchBar: React.FC<SearchBarProps> = ({placeholder, origin, destiny, onChange, onChangeTextTyped}) => {
   const showMargin = true;
   const textInputRef = useRef<TextInput>(null);
   const originOrDestiny = destiny == undefined ? origin : destiny
@@ -35,6 +35,10 @@ const SearchBar: React.FC<SearchBarProps> = ({placeholder, origin, destiny, onCh
     }, 100);
   }, [textInputRef, origin, destiny]);
 
+  const handleTextChange = (inputText: string) => {
+    onChangeTextTyped(inputText);
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "android" ? "height" : undefined}
@@ -43,12 +47,12 @@ const SearchBar: React.FC<SearchBarProps> = ({placeholder, origin, destiny, onCh
       <View style={[styles.searchBarContainer, showMargin && styles.containerWithMargin]}>
         <TouchableOpacity onPress={() => handleSearchBar(placeholder)}>
           <View style={styles.button}>
-            <UniversityLogo />
             <TextInput
               ref={textInputRef}
               placeholder={placeHolderVariable}
               placeholderTextColor="white"
               style={styles.buttonText}
+              onChangeText={handleTextChange}
               onPressIn={() => handleSearchBar(placeholder)}
             />
           </View>
@@ -61,8 +65,8 @@ const SearchBar: React.FC<SearchBarProps> = ({placeholder, origin, destiny, onCh
 const styles = StyleSheet.create({
   searchBarContainer: {
     display: "flex",
-    paddingHorizontal: 16,
-    width: "100%",
+    paddingRight: 64,
+    paddingLeft: 16
   },
   containerWithMargin: {
     paddingTop: 16
@@ -78,7 +82,6 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   buttonText: {
-    paddingLeft: 10,
     color: "white",
     flex: 1,
   },

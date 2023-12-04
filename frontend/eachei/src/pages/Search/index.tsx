@@ -2,40 +2,32 @@ import { StyleSheet, View, ScrollView, Text } from "react-native";
 
 import SearchBar from "../../components/SearchBar";
 import PlaceList from "../../components/Places/PlaceList";
-import { useEffect, useState } from "react";
-import api from "../../services/api";
+import { useState } from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Entypo,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
+import PlaceItem from "../../components/Places/PlaceItem";
+
+interface PlaceItem {
+  id: string;
+  name: string;
+}
 
 const Search = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
-  const [origin, setOrigin] = useState("");
-  const [destiny, setDestiny] = useState("");
+  const [originName, setOriginName] = useState("");
+  const [destinyName, setDestinyName] = useState("");
+  const [originId, setOriginId] = useState("");
+  const [destinyId, setDestinyId] = useState("");
+  const [searchText, setSearchText] = useState("");
 
-  let searchBarSelected = "";
-
-  const handleOnChange = (info: any) => {
-    changeSearchBarContent(info);
-  };
-
-  const handleSearchBar = (placeholder: string) => {
-    searchBarSelected =
-      placeholder == "Informe sua origem" ? "origem" : "destino";
-  };
-
-  const changeSearchBarContent = (option: string) => {
-    if (searchBarSelected != "") {
-      searchBarSelected == "origem" ? setOrigin(option) : setDestiny(option);
-    }
-  };
-
-  const sendRoute = () => {
-    navigation.navigate('Home' as never, {originId: "P3", destinyId: "CE3P3"} as never)
-  }
-  
-  const places = [
+  let places = [
     {
       title: "Portarias",
       icon: "boom-gate-outline",
@@ -90,31 +82,129 @@ const Search = () => {
     },
   ];
 
+  let searchBarSelected = "";
+
+  const handleOnChange = (info: PlaceItem) => {
+    console.log("shape of you", info);
+    changeSearchBarContent(info);
+  };
+
+  const handleSearchBar = (placeholder: string) => {
+    searchBarSelected =
+      placeholder == "Informe sua origem" ? "origem" : "destino";
+
+    setSearchText("");
+    console.log(searchText);
+  };
+
+  const changeSearchBarContent = (option: PlaceItem) => {
+    if (searchBarSelected != "") {
+      searchBarSelected == "origem" ? setOriginInfos(option) : setDestinyInfos(option);
+    }
+  };
+
+  const setOriginInfos = (option: PlaceItem) => {
+    setOriginName(option.name);
+    setOriginId(option.id);
+  }
+  const setDestinyInfos = (option: PlaceItem) => {
+    setDestinyName(option.name);
+    setDestinyId(option.id);
+  }
+
+  const sendRoute = () => {
+    console.log("origem: ", originId);
+    console.log("destino: ", destinyId);
+    navigation.navigate(
+      "Home" as never,
+      { originId: originId, originName: originName, destinyId: destinyId, destinyName: destinyName} as never
+    );
+  };
+
+  const handleBackIcon = () => {
+    navigation.navigate("Home" as never);
+  };
+
+  const handleTextTyped = (textTyped: string) => {
+    setSearchText(textTyped);
+  };
+
+  const filteredPlaces = places.map((place) => ({
+    ...place,
+    items: place.items.filter((item) =>
+      item.name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .includes(
+          searchText
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+        )
+    ),
+  }));
+
   return (
     <View style={styles.container}>
       <ScrollView style={{ flex: 1 }}>
-        <SearchBar
-          placeholder="Informe sua origem"
-          origin={origin}
-          onChange={handleSearchBar}
-        />
-        <SearchBar
-          placeholder="Informe seu destino"
-          destiny={destiny}
-          onChange={handleSearchBar}
-        />
-
-        <PlaceList places={places} onChange={handleOnChange} />
-      </ScrollView>
-
-      <TouchableOpacity style={styles.fixedButton} onPress={sendRoute}>
-        <MaterialCommunityIcons
-          name={"navigation-outline" as any}
+        <Ionicons
+          style={{ paddingLeft: 16, paddingTop: 16 }}
+          name="arrow-back-sharp"
           size={24}
           color="white"
+          onPress={handleBackIcon}
         />
-        <Text style={styles.buttonText} onPress={sendRoute}>Iniciar trajeto</Text>
-      </TouchableOpacity>
+        <View style={styles.search}>
+          <View style={styles.icons}>
+            <MaterialIcons name="trip-origin" size={24} color="white" />
+            <Entypo name="dots-three-vertical" size={18} color="#767676" />
+            <MaterialCommunityIcons
+              name="google-maps"
+              size={24}
+              color="white"
+            />
+          </View>
+          <View style={styles.bars}>
+            <SearchBar
+              placeholder="Informe sua origem"
+              origin={originName}
+              onChange={handleSearchBar}
+              onChangeTextTyped={handleTextTyped}
+            />
+            <SearchBar
+              placeholder="Informe seu destino"
+              destiny={destinyName}
+              onChange={handleSearchBar}
+              onChangeTextTyped={handleTextTyped}
+            />
+          </View>
+        </View>
+
+        <PlaceList places={filteredPlaces} onChange={handleOnChange} />
+      </ScrollView>
+
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          right: 0,
+          borderColor: "red",
+          width: 140,
+          height: 50,
+        }}
+      >
+        <TouchableOpacity style={styles.fixedButton} onPress={sendRoute}>
+          <MaterialCommunityIcons
+            name={"navigation-outline" as any}
+            size={24}
+            color="white"
+          />
+          <Text style={styles.buttonText} onPress={sendRoute}>
+            Ver trajeto
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -125,24 +215,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#282828",
     paddingTop: 40,
   },
+  search: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  icons: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingLeft: 16,
+    marginTop: 28,
+    height: 90,
+  },
+  bars: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  },
   fixedButton: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    width: 140,
+    width: 120,
     height: 50,
-    bottom: 50, // Ajuste conforme necessário
-    left: 200, // Ajuste conforme necessário
-    backgroundColor: "blue",
+    bottom: 0,
+    backgroundColor: "#8758B6",
     padding: 10,
     borderRadius: 20,
-    zIndex: 1,
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
-    marginLeft: 5
+    marginLeft: 5,
   },
 });
 export default Search;
