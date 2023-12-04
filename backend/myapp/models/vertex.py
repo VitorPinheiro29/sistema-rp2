@@ -28,10 +28,10 @@ class Vertex(models.Model):
         self.adjacencies = []
     
     def __repr__(self) -> str:
-        return str(f'{self.id}({self.weight_estimate})')
+        return str(f'{self.id}')
     
     def __str__(self) -> str:
-        return str(f'{self.id}({self.weight_estimate})')
+        return str(f'{self.id}')
     
     def __lt__(self, other):
         return self.weight_estimate < other.weight_estimate

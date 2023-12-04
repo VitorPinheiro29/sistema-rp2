@@ -17,7 +17,6 @@ class EdgeList(generics.ListCreateAPIView):
     queryset = Edge.objects.all()
     serializer_class = EdgeSerializer
 
-
 @api_view(['GET'])
 def most_acessible_route(request):
     try:

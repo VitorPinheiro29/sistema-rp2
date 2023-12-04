@@ -18,8 +18,9 @@ from .graphResponse import GraphResponse
 class Graph:
     
     def __init__(self, preferences):
-        self._vertices = list(Vertex.objects.filter(isAcessible=True))
-        self._edges = self._get_edges(preferences)
+        self._vertices = list(Vertex.objects.all())
+        self._edges = list(Edge.objects.all())
+        self._preferences = preferences
         self._build()
         
     @property
@@ -29,18 +30,6 @@ class Graph:
     @property
     def edges(self) -> set:
         return self._edges
-    
-    def _get_edges(self, preferences):
-        edges = []
-        if preferences['raining'] and preferences['crowded']:
-            edges = list(Edge.objects.filter(isCovered=True, isCrowded=False))
-        elif preferences['raining']:
-            edges = list(Edge.objects.filter(isCovered=True))
-        elif preferences['crowded']:
-            edges = list(Edge.objects.filter(isCrowded=False))
-        else:
-            edges = list(Edge.objects.all())
-        return edges
             
     def _build(self):
         for vertex in self._vertices:
@@ -63,7 +52,7 @@ class Graph:
         destiny = self._search_vertex_references(destiny_id)
         if origin is None or destiny is None:
             return None
-        GraphAlgorithms.dijkstra(self, origin)
+        GraphAlgorithms.dijkstra(self, origin, self._preferences)
         return self._extract_path(origin, destiny)
     
     # Constroi o caminho do vértice origem até o destino

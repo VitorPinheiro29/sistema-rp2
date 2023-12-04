@@ -12,7 +12,7 @@ class GraphResponse:
     def __init__(self, origin: Vertex, destiny: Vertex):
         self._origin = origin
         self._destiny = destiny
-        self._waypoints = set()
+        self._waypoints = []
         
     @property
     def origin(self):
@@ -27,7 +27,7 @@ class GraphResponse:
         return self._waypoints
     
     def add_waypoints(self, waypoint: Vertex):
-        self._waypoints.add(waypoint)
+        self._waypoints.append(waypoint)
     
     def __repr__(self) -> str:
         string = f"origin: {self._origin}\ndestiny: {self._destiny}\nwaypoints: {self._waypoints}"

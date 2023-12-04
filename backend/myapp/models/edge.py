@@ -26,7 +26,7 @@ class Edge(models.Model):
     destiny = models.ForeignKey(Vertex, on_delete=models.CASCADE, related_name='edges_destiny')
     length = models.FloatField()
     width = models.FloatField()
-    height = models.IntegerField()
+    height = models.FloatField()
     slope = models.FloatField()
     surface_type = models.IntegerField()
     surface_quality = models.IntegerField()
@@ -41,12 +41,22 @@ class Edge(models.Model):
     @property
     def weight(self):
         weight = (self.length
-        + (3/self.width if self.width != 0 else 0)
-        + self.height
-        + self.slope
-        + self.surface_type
-        + self.surface_quality
-        + self.segment_type)
+        + (1.2/self.width if self.width != 0 else 0)
+        + (self.height*self.length)
+        + (self.slope*self.length)
+        + (self.surface_type*self.length)
+        + (self.surface_quality*self.length)
+        + (self.segment_type*self.length))
+        return weight
+    
+    @property
+    def weight_crowded(self):
+        weight = 10*self.length if self.isCrowded else 0
+        return weight
+    
+    @property
+    def weight_covered(self):
+        weight = 10*self.length if not self.isCovered else 0
         return weight
     
     def search_vertex_id(self, vertex_id: str) -> str | None:
