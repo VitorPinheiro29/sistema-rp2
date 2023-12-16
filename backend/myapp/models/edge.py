@@ -37,7 +37,6 @@ class Edge(models.Model):
     def __repr__(self) -> str:
         return self.name
     
-    # Definir função de custo das arestas
     @property
     def weight(self):
         weight = (self.length
